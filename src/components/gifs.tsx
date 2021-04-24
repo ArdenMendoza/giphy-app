@@ -16,6 +16,22 @@ interface DispatchProps {
     loadTrendingGifs: (data: gif[]) => void;
 }
 
+const constantStyles = {
+    container: {
+        backgroundColor: 'rgb(246, 248, 250)',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    } as React.CSSProperties,
+    card: {
+        backgroundColor: 'white',
+        overflow: 'hidden',
+        padding: '5px',
+        border: '1px solid rgb(236, 238, 240)',
+        height: '300px',
+    } as React.CSSProperties,
+}
+
 const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProps> = (props) => {
     const { trendingGifs, loadTrendingGifs } = props;
     const gifClient = new GiphyClient;
@@ -39,20 +55,7 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
         return colCount;
     }
 
-    const styles = {
-        container: {
-            backgroundColor: 'rgb(246, 248, 250)',
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-        } as React.CSSProperties,
-        card: {
-            backgroundColor: 'white',
-            overflow: 'hidden',
-            padding: '5px',
-            border: '1px solid rgb(236, 238, 240)',
-            height: '300px',
-        } as React.CSSProperties,
+    const dynamicStyles = {
         cardContainer: {
             float: 'left',
             width: `calc((100% / ${getColCountBasedOnDevice()}) - 20px)`,
@@ -62,7 +65,7 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
     }
 
 
-    return <div style={styles.container}>
+    return <div style={constantStyles.container}>
         <div style={{ textAlign: 'center' }}>
             <button onClick={() => setPageNumber(pageNumber - 1)}>{'Previous Page'}</button>
             <span style={{ margin: '0px 10px' }}>{pageNumber}</span>
@@ -70,8 +73,8 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
         </div>
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex-grid', }}>
             {
-                trendingGifs.map(tg => <div style={styles.cardContainer}>
-                    <div style={styles.card}>
+                trendingGifs.map(tg => <div style={dynamicStyles.cardContainer}>
+                    <div style={constantStyles.card}>
                         <img style={{ height: 'calc(100% - 25px)', width: '100%', cursor: 'pointer' }} src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} onClick={() => setPrevUrl(`https://i.giphy.com/media/${tg.id}/giphy.webp`)} />
                         <div style={{ display: 'flex', color: '#888' }}>
                             <div style={{ flex: 1, textAlign: 'left', cursor: 'pointer' }}>
