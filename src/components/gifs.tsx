@@ -25,7 +25,18 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
     React.useEffect(() => {
         const pageSize = 20;
         gifClient.getTrendingGifs(pageSize, pageNumber === 1 ? 0 : (pageNumber * pageSize) + 1).then(res => res.data && loadTrendingGifs(res.data));
-    }, [pageNumber]);
+    }, [pageNumber, navigator.userAgent]);
+
+    const getColCountBasedOnDevice = () => {
+        let colCount = 4;
+        const isMobile = /iPhone|iPod|Android/i.test(navigator.userAgent);
+        const isTablet = /iPad/i.test(navigator.userAgent);
+        console.log('isMobile: ', isMobile);
+        console.log('isTablet: ', isTablet);
+        if (isMobile) { colCount = 2; }
+        if (isTablet) { colCount = 3; }
+        return colCount;
+    }
 
     const styles = {
         container: {
@@ -43,11 +54,12 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
         } as React.CSSProperties,
         cardContainer: {
             float: 'left',
-            width: 'calc((100% / 3) - 60px)',
-            // height: '300px',
+            width: `calc((100% / ${getColCountBasedOnDevice()}) - 20px)`,
             padding: '10px'
         } as React.CSSProperties
     }
+
+
     return <div style={styles.container}>
         <div style={{ textAlign: 'center' }}>
             <button onClick={() => setPageNumber(pageNumber - 1)}>{'Previous Page'}</button>
