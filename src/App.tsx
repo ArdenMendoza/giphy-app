@@ -5,7 +5,7 @@ import { GifApp } from './components/gifs';
 function App() {
   return (
     <div className="App">
-      <GifApp trendingGifs={[]}/>
+      <GifApp/>
     </div>
   );
 }

@@ -3,17 +3,21 @@ import { connect } from 'react-redux';
 import { loadTrendingGifs } from '../store/actions';
 import { IGiphyAppState } from '../store/store';
 import { GiphyClient } from '../api/apiClient';
-import { gif } from '../api/model';
+import { IGifItem, IPagination } from '../api/model';
+import { IGifsState } from '../store/reducer';
+import { Pagination } from '@material-ui/lab';
+import { withStyles } from '@material-ui/core';
 
 interface Props {
 }
 
 interface ReduxStateProps {
-    trendingGifs: gif[];
+    trendingGifs?: IGifItem[];
+    pagination?: IPagination;
 }
 
 interface DispatchProps {
-    loadTrendingGifs: (data: gif[]) => void;
+    loadGifData: (data: IGifsState) => void;
 }
 
 const constantStyles = {
@@ -23,6 +27,7 @@ const constantStyles = {
         flexDirection: 'column',
         height: '100%',
     } as React.CSSProperties,
+    gifListContainer: { flex: 1, overflowY: 'auto', display: 'flex-grid' } as React.CSSProperties,
     card: {
         backgroundColor: 'white',
         overflow: 'hidden',
@@ -33,7 +38,7 @@ const constantStyles = {
 }
 
 const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProps> = (props) => {
-    const { trendingGifs, loadTrendingGifs } = props;
+    const { trendingGifs, pagination, loadGifData } = props;
     const gifClient = new GiphyClient;
 
     const [pageNumber, setPageNumber] = React.useState(1);
@@ -41,7 +46,11 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
 
     React.useEffect(() => {
         const pageSize = 20;
-        gifClient.getTrendingGifs(pageSize, pageNumber === 1 ? 0 : (pageNumber * pageSize) + 1).then(res => res.data && loadTrendingGifs(res.data));
+        // make client call here
+        gifClient.getTrendingGifs(pageSize, pageNumber === 1 ? 0 : (pageSize * (pageNumber - 1)) + 1)
+            .then(res => {
+                res.data && loadGifData(res.data);
+            });
     }, [pageNumber, navigator.userAgent]);
 
     const getColCountBasedOnDevice = () => {
@@ -54,7 +63,6 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
         if (isTablet) { colCount = 3; }
         return colCount;
     }
-
     const dynamicStyles = {
         cardContainer: {
             float: 'left',
@@ -64,18 +72,20 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
         } as React.CSSProperties
     }
 
-
     return <div style={constantStyles.container}>
-        <div style={{ textAlign: 'center' }}>
-            <button onClick={() => setPageNumber(pageNumber - 1)}>{'Previous Page'}</button>
-            <span style={{ margin: '0px 10px' }}>{pageNumber}</span>
-            <button onClick={() => setPageNumber(pageNumber + 1)}>{'Next Page'}</button>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex-grid', }}>
+        <Pagination
+            style={{ maxWidth: '600px', margin: 'auto' }}
+            count={Math.floor((pagination?.total_count ?? 0) / 20)}
+            siblingCount={2}
+            onChange={(e, page) => setPageNumber(page)} />
+        <div style={constantStyles.gifListContainer}>
             {
-                trendingGifs.map(tg => <div style={dynamicStyles.cardContainer}>
+                trendingGifs?.map(tg => <div style={dynamicStyles.cardContainer}>
                     <div style={constantStyles.card}>
-                        <img style={{ height: 'calc(100% - 25px)', width: '100%', cursor: 'pointer' }} src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} onClick={() => setPrevUrl(`https://i.giphy.com/media/${tg.id}/giphy.webp`)} />
+                        <img
+                            style={{ height: 'calc(100% - 25px)', width: '100%', cursor: 'pointer' }}
+                            src={`https://i.giphy.com/media/${tg.id}/giphy.webp`}
+                            onClick={() => setPrevUrl(`https://i.giphy.com/media/${tg.id}/giphy.webp`)} />
                         <div style={{ display: 'flex', color: '#888' }}>
                             <div style={{ flex: 1, textAlign: 'left', cursor: 'pointer' }}>
                                 <a href={tg.url} style={{ textDecoration: 'none', color: '#888' }}>
@@ -100,16 +110,17 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
             }
         </div>
         {prevUrl !== '' && <div style={{ position: 'absolute', height: '100%', width: '100%', backgroundColor: 'black', opacity: '0.7' }}></div>}
-        {prevUrl !== '' && <div style={{ position: 'absolute', height: 'calc(100% - 400px)', padding: '200px 0px', width: '100%', textAlign: 'center' }} onClick={() => setPrevUrl('')}>
+        {prevUrl !== '' && <div style={{ position: 'absolute', height: '100%', width: '100%', padding: '200px 0px', textAlign: 'center' }} onClick={() => setPrevUrl('')}>
             <img src={prevUrl} style={{ height: '100%' }} />
         </div>}
     </div>
 }
 
 export const GifApp = connect<{}, DispatchProps, {}, IGiphyAppState>((state) => ({
-    trendingGifs: state.gifs.trendingGifs
+    trendingGifs: state.gifs.trendingGifs,
+    pagination: state.gifs.pagination
 }), dispatch => ({
-    loadTrendingGifs: data => dispatch(loadTrendingGifs(data))
+    loadGifData: data => dispatch(loadTrendingGifs(data))
 }))(GifAppDump);
 
 // export default Layout;
