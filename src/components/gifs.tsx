@@ -56,7 +56,8 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
         cardContainer: {
             float: 'left',
             width: `calc((100% / ${getColCountBasedOnDevice()}) - 20px)`,
-            padding: '10px'
+            height: '340px',
+            padding: '10px 10px 0px 10px'
         } as React.CSSProperties
     }
 
@@ -86,7 +87,7 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
                         </div>
                     </div>
                     {
-                        tg.user?.avatar_url && <div>
+                        tg.user?.avatar_url && <div style={{ marginLeft: '5px' }}>
                             <img src={tg.user?.avatar_url} style={{ height: '10px', width: '10px', borderRadius: '10px' }} />
                             <a href={tg.user.profile_url} style={{ marginLeft: '5px', fontSize: '10px', color: '#72b2ea', textDecoration: 'none' }}>{tg.username}</a>
                         </div>
