@@ -21,6 +21,7 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
     const gifClient = new GiphyClient;
 
     const [pageNumber, setPageNumber] = React.useState(1);
+    const [prevUrl, setPrevUrl] = React.useState('');
 
     React.useEffect(() => {
         const pageSize = 20;
@@ -70,7 +71,7 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
             {
                 trendingGifs.map(tg => <div style={styles.cardContainer}>
                     <div style={styles.card}>
-                        <img style={{ height: 'calc(100% - 25px)', width: '100%' }} src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} />
+                        <img style={{ height: 'calc(100% - 25px)', width: '100%', cursor: 'pointer' }} src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} onClick={() => setPrevUrl(`https://i.giphy.com/media/${tg.id}/giphy.webp`)} />
                         <div style={{ display: 'flex' }}>
                             <div style={{ flex: 1, textAlign: 'left' }}>{'link icon here'}</div>
                             <div style={{ textAlign: 'right' }}>
@@ -82,7 +83,7 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
                     </div>
                     {
                         tg.user?.avatar_url && <div>
-                            <img src={tg.user?.avatar_url} style={{ height: '10px', width: '10px' }} />
+                            <img src={tg.user?.avatar_url} style={{ height: '10px', width: '10px', borderRadius: '10px' }} />
                             <a href={tg.user.profile_url} style={{ marginLeft: '5px', fontSize: '10px', color: '#72b2ea', textDecoration: 'none' }}>{tg.username}</a>
                         </div>
                     }
@@ -90,6 +91,10 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
                 )
             }
         </div>
+        {prevUrl !== '' && <div style={{ position: 'absolute', height: '100%', width: '100%', backgroundColor: 'black', opacity: '0.7' }}></div>}
+        {prevUrl !== '' && <div style={{ position: 'absolute', height: 'calc(100% - 400px)', padding: '200px 0px', width: '100%', textAlign: 'center' }} onClick={() => setPrevUrl('')}>
+            <img src={prevUrl} style={{ height: '100%' }} />
+        </div>}
     </div>
 }
 
