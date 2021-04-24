@@ -72,12 +72,16 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
                 trendingGifs.map(tg => <div style={styles.cardContainer}>
                     <div style={styles.card}>
                         <img style={{ height: 'calc(100% - 25px)', width: '100%', cursor: 'pointer' }} src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} onClick={() => setPrevUrl(`https://i.giphy.com/media/${tg.id}/giphy.webp`)} />
-                        <div style={{ display: 'flex' }}>
-                            <div style={{ flex: 1, textAlign: 'left' }}>{'link icon here'}</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <span>{'v'}</span>
-                                <span>{'c'}</span>
-                                <span>{'r'}</span>
+                        <div style={{ display: 'flex', color: '#888' }}>
+                            <div style={{ flex: 1, textAlign: 'left', cursor: 'pointer' }}>
+                                <a href={tg.url} style={{ textDecoration: 'none', color: '#888' }}>
+                                    <i className={'fa fa-link'}></i>
+                                </a>
+                            </div>
+                            <div style={{ textAlign: 'right', fontSize: '11px' }}>
+                                <span style={{ marginRight: '5px' }}><i style={{ marginRight: '3px' }} className={'fa fa-eye'}></i>{'1000'}</span>
+                                <span style={{ marginRight: '5px' }}><i style={{ marginRight: '3px' }} className={'fa fa-comment'}></i>{'900'}</span>
+                                <span style={{ marginRight: '5px' }}><i style={{ marginRight: '3px' }} className={'fa fa-heart'}></i>{'123'}</span>
                             </div>
                         </div>
                     </div>

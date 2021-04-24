@@ -5,7 +5,7 @@ export const gifMapper = (data: gif[]): gif[] => {
         title: d.title,
         id: d.id,
         type: d.type,
-        embed_url: d.embed_url,
+        url: d.url,
         username: d.username,
         rating: d.rating,
         user: {
