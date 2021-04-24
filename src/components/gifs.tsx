@@ -20,18 +20,64 @@ const GifAppDump: React.FunctionComponent<Props & ReduxStateProps & DispatchProp
     const { trendingGifs, loadTrendingGifs } = props;
     const gifClient = new GiphyClient;
 
-    React.useEffect(() => {
-        gifClient.getTrendingGifs().then(res => res.data && loadTrendingGifs(res.data));
-    }, []);
+    const [pageNumber, setPageNumber] = React.useState(1);
 
-    return <div>
-        {
-            trendingGifs.map(tg => <div>
-                <img src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} />
-                <div>{tg.title}</div>
-            </div>
-            )
-        }
+    React.useEffect(() => {
+        const pageSize = 20;
+        gifClient.getTrendingGifs(pageSize, pageNumber === 1 ? 0 : (pageNumber * pageSize) + 1).then(res => res.data && loadTrendingGifs(res.data));
+    }, [pageNumber]);
+
+    const styles = {
+        container: {
+            backgroundColor: 'rgb(246, 248, 250)',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+        } as React.CSSProperties,
+        card: {
+            backgroundColor: 'white',
+            overflow: 'hidden',
+            padding: '5px',
+            border: '1px solid rgb(236, 238, 240)',
+            height: '300px',
+        } as React.CSSProperties,
+        cardContainer: {
+            float: 'left',
+            width: 'calc((100% / 3) - 60px)',
+            // height: '300px',
+            padding: '10px'
+        } as React.CSSProperties
+    }
+    return <div style={styles.container}>
+        <div style={{ textAlign: 'center' }}>
+            <button onClick={() => setPageNumber(pageNumber - 1)}>{'Previous Page'}</button>
+            <span style={{ margin: '0px 10px' }}>{pageNumber}</span>
+            <button onClick={() => setPageNumber(pageNumber + 1)}>{'Next Page'}</button>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex-grid', }}>
+            {
+                trendingGifs.map(tg => <div style={styles.cardContainer}>
+                    <div style={styles.card}>
+                        <img style={{ height: 'calc(100% - 25px)', width: '100%' }} src={`https://i.giphy.com/media/${tg.id}/giphy.webp`} />
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ flex: 1, textAlign: 'left' }}>{'link icon here'}</div>
+                            <div style={{ textAlign: 'right' }}>
+                                <span>{'v'}</span>
+                                <span>{'c'}</span>
+                                <span>{'r'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {
+                        tg.user?.avatar_url && <div>
+                            <img src={tg.user?.avatar_url} style={{ height: '10px', width: '10px' }} />
+                            <a href={tg.user.profile_url} style={{ marginLeft: '5px', fontSize: '10px', color: '#72b2ea', textDecoration: 'none' }}>{tg.username}</a>
+                        </div>
+                    }
+                </div>
+                )
+            }
+        </div>
     </div>
 }
 

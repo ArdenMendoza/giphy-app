@@ -5,4 +5,8 @@ export interface gif {
     username: string;
     title: string;
     rating: string;
+    user: {
+        avatar_url: string;
+        profile_url: string;
+    }
 }
